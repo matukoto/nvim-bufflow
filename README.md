@@ -1,23 +1,15 @@
 # nvim-bufflow
 
-A Neovim plugin for efficient buffer management with preview functionality.
+Neovimのバッファ管理プラグイン。プレビュー機能付きでバッファの閲覧、切り替え、削除が可能です。
 
-## Features
+## 機能
 
-- Display buffer list in a floating window
-- Preview buffers while selecting
-- Open selected buffer
-- Delete single buffer
-- Bulk delete multiple buffers
-- Automatic preview on cursor movement
+- バッファ一覧の表示
+- プレビュー機能付きのバッファ選択
+- バッファの開閉操作
+- 単一または一括でのバッファ削除
 
-## Installation
-
-Using [packer.nvim](https://github.com/wbthomason/packer.nvim):
-
-```lua
-use 'matukoto/nvim-bufflow'
-```
+## インストール
 
 Using [lazy.nvim](https://github.com/folke/lazy.nvim):
 
@@ -26,52 +18,56 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
   'matukoto/nvim-bufflow',
   config = function()
     require('bufflow').setup({
-      -- your configuration here
+      -- オプション設定
     })
-  end
+  end,
 }
 ```
 
-## Usage
+## 設定
 
-### Commands
-
-- `:BufFlow` - Open buffer list window
-- `:BufFlowClose` - Close buffer list window
-- `:BufFlowDelete` - Delete current buffer
-
-### Default Keymaps in Buffer List Window
-
-- `q` - Close buffer list window
-- `d` - Delete selected buffer
-- `D` - Delete all selected buffers
-- `p` - Preview selected buffer
-- `<CR>` - Open selected buffer
-- `<Space>` - Toggle buffer selection (for bulk delete)
-
-## Configuration
+デフォルト設定:
 
 ```lua
 require('bufflow').setup({
-  preview = {
-    enabled = true,      -- Enable/disable preview window
-    width = 0.5,        -- Preview window width (0.0-1.0)
-    position = 'right'  -- Preview window position ('right')
+  -- キーマップの設定
+  keymap = {
+    close = 'q',      -- バッファリストを閉じる
+    delete = 'd',     -- バッファを削除
+    bulk_delete = 'D', -- 選択したバッファを一括削除
+    preview = 'p',    -- プレビューの切り替え
+    open = '<CR>',    -- バッファを開く
   },
-  keymaps = {
-    close = 'q',
-    delete = 'd',
-    bulk_delete = 'D',
-    preview = 'p',
-    open = '<CR>'
-  }
+  -- ウィンドウの設定
+  window = {
+    preview_enabled = true,     -- プレビューウィンドウを有効にする
+    preview_width = 0.5,        -- プレビューウィンドウの幅（割合）
+    preview_position = 'right', -- プレビューウィンドウの位置
+  },
 })
 ```
 
-## Contributing
+## 使い方
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+### コマンド
 
-## License
+- `:Bufflow` - バッファリストを開く
+- `:BufflowDelete` - 現在のバッファ以外をすべて削除
 
-MIT
+### キーマップ（デフォルト）
+
+バッファリストウィンドウ内で:
+
+- `q` - バッファリストを閉じる
+- `d` - カーソル位置のバッファを削除
+- `D` - 選択したバッファを一括削除
+- `p` - プレビューウィンドウの表示/非表示を切り替え
+- `<CR>` - カーソル位置のバッファを開く
+
+## 貢献
+
+バグ報告や機能リクエストは[GitHub Issues](https://github.com/matukoto/nvim-bufflow/issues)にお願いします。
+
+## ライセンス
+
+MIT License
