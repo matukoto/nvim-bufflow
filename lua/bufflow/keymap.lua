@@ -75,7 +75,7 @@ end
 ---@param config KeyConfig
 local function setup_buffer_keymaps(bufnr, config)
   local opts = { noremap = true, silent = true, buffer = bufnr }
-  
+
   vim.keymap.set('n', config.close, ui.close_windows, opts)
   vim.keymap.set('n', config.delete, delete_selected_buffer, opts)
   vim.keymap.set('n', config.bulk_delete, bulk_delete_buffers, opts)
