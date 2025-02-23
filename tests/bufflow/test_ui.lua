@@ -1,105 +1,154 @@
-local eq = assert.are.same
 local T = require('mini.test')
-
 local ui = require('bufflow.ui')
 
-local test_file = 'test_buffer.txt'
-local config = {
+local new_set = T.new_set
+
+local test_files = {
+  'test_ui1.txt',
+  'test_ui2.txt',
+}
+
+local window_config = {
   preview_enabled = true,
   preview_width = 0.5,
-  preview_position = 'right'
+  preview_position = 'right',
 }
 
-local new_set = MiniTest.new_set {
+-- Setup test files and buffers
+local function setup_test_environment()
+  -- クリーンアップ
+  vim.cmd('silent! %bwipeout!')
+  for _, file in ipairs(test_files) do
+    os.remove(file)
+  end
+
+  -- テストファイル作成
+  for _, file in ipairs(test_files) do
+    local f = io.open(file, 'w')
+    if f then
+      f:write('Test content for ' .. file)
+      f:close()
+    end
+  end
+
+  -- バッファ作成
+  for _, file in ipairs(test_files) do
+    vim.cmd('badd ' .. file)
+  end
+
+  -- 最初のバッファに移動
+  vim.cmd('buffer ' .. vim.fn.bufnr(test_files[1]))
+end
+
+-- Cleanup test environment
+local function cleanup_test_environment()
+  -- Close windows
+  ui.close_windows()
+
+  -- Delete buffers and files
+  vim.cmd('silent! %bwipeout!')
+  for _, file in ipairs(test_files) do
+    os.remove(file)
+  end
+end
+
+-- Tests for UI operations
+local T = new_set({
   hooks = {
     pre_case = function()
-      -- Create test buffer
-      vim.cmd('new ' .. test_file)
+      cleanup_test_environment()
+      setup_test_environment()
     end,
     post_case = function()
-      -- Clean up
-      ui.close_windows()
-      vim.cmd('bdelete! ' .. test_file)
+      cleanup_test_environment()
     end,
   },
-}
+})
 
-new_set {
-  'create_window': function()
-    ui.create_window(config)
+T['ui operations'] = new_set()
 
-    -- Check if windows are created
-    local list_win = vim.fn.bufwinid('bufflow')
-    eq(list_win > 0, true, 'List window should be created')
-    
-    -- Get all windows
+T['ui operations']['create_window'] = function()
+  -- Create windows
+  ui.create_window(window_config)
+  vim.cmd('sleep 100m')
+
+  -- Check main list window
+  local list_win = vim.fn.bufwinid('bufflow')
+  assert(list_win > 0, 'Buffer list window should exist')
+
+  -- Check preview window if enabled
+  if window_config.preview_enabled then
     local windows = vim.api.nvim_list_wins()
-    local preview_exists = false
+    local preview_found = false
+
     for _, win in ipairs(windows) do
-      if win ~= list_win and vim.api.nvim_win_is_valid(win) then
-        preview_exists = true
+      local win_config = vim.api.nvim_win_get_config(win)
+      if win_config.relative ~= '' then
+        preview_found = true
         break
       end
     end
-    eq(preview_exists, true, 'Preview window should be created')
-  end,
 
-  'close_windows': function()
-    ui.create_window(config)
-    ui.close_windows()
+    assert(preview_found, 'Preview window should exist')
+  end
+end
 
-    -- Get all windows
+T['ui operations']['handle_preview'] = function()
+  -- Create windows
+  ui.create_window(window_config)
+  vim.cmd('sleep 100m')
+
+  -- Get initial window count
+  local initial_wins = #vim.api.nvim_list_wins()
+
+  -- Toggle preview
+  ui.toggle_preview()
+  vim.cmd('sleep 100m')
+
+  -- Check window count changed
+  local toggle_wins = #vim.api.nvim_list_wins()
+  assert(toggle_wins ~= initial_wins, 'Window count should change after toggle')
+
+  -- Toggle back
+  ui.toggle_preview()
+  vim.cmd('sleep 100m')
+
+  -- Check windows restored
+  local final_wins = #vim.api.nvim_list_wins()
+  assert(final_wins == initial_wins, 'Window count should be restored')
+end
+
+T['ui operations']['window_layout'] = function()
+  -- Create windows
+  ui.create_window(window_config)
+  vim.cmd('sleep 100m')
+
+  -- Check list window position
+  local list_win = vim.fn.bufwinid('bufflow')
+  local list_config = vim.api.nvim_win_get_config(list_win)
+
+  -- List window should be a normal window
+  assert(list_config.relative == '', 'List window should be a normal window')
+
+  -- Check preview window if enabled
+  if window_config.preview_enabled then
     local windows = vim.api.nvim_list_wins()
-    local list_exists = false
-    local preview_exists = false
+    local preview_found = false
 
     for _, win in ipairs(windows) do
-      local buf = vim.api.nvim_win_get_buf(win)
-      local ft = vim.api.nvim_buf_get_option(buf, 'filetype')
-      if ft == 'bufflow' then
-        list_exists = true
-      elseif win ~= vim.api.nvim_get_current_win() then
-        preview_exists = true
-      end
-    end
-
-    eq(list_exists, false, 'List window should be closed')
-    eq(preview_exists, false, 'Preview window should be closed')
-  end,
-
-  'handle_preview': function()
-    ui.create_window(config)
-    local test_bufnr = vim.fn.bufnr(test_file)
-    
-    -- Simulate cursor movement to first line
-    ui.handle_preview(1)
-    
-    -- Get preview window buffer
-    local windows = vim.api.nvim_list_wins()
-    local preview_buf = nil
-    for _, win in ipairs(windows) do
-      local buf = vim.api.nvim_win_get_buf(win)
-      if buf ~= test_bufnr and vim.api.nvim_buf_is_valid(buf) then
-        preview_buf = buf
+      local win_config = vim.api.nvim_win_get_config(win)
+      if win_config.relative ~= '' then
+        preview_found = true
+        -- Check preview window position
+        if window_config.preview_position == 'right' then
+          assert(win_config.anchor == 'NW', 'Preview window should anchor to top-left')
+        end
         break
       end
     end
-    
-    eq(preview_buf ~= nil, true, 'Preview buffer should exist')
-  end,
 
-  'get_selected_buffer': function()
-    ui.create_window(config)
-    
-    -- Move cursor to first line
-    local list_win = vim.fn.bufwinid('bufflow')
-    vim.api.nvim_win_set_cursor(list_win, {1, 0})
-    
-    local selected = ui.get_selected_buffer()
-    eq(type(selected), 'table', 'Should return buffer info table')
-    eq(type(selected.bufnr), 'number', 'Should have buffer number')
-    eq(type(selected.name), 'string', 'Should have buffer name')
-  end,
-}
+    assert(preview_found, 'Preview window should exist with correct layout')
+  end
+end
 
-return new_set
+return T

@@ -30,7 +30,7 @@ local function get_window_config(config)
   local height = vim.o.lines - 4
 
   local list_width = vim.o.columns - (config.preview_enabled and width or 0)
-  
+
   return {
     list = {
       width = list_width,
@@ -49,7 +49,7 @@ local function get_window_config(config)
       relative = 'editor',
       style = 'minimal',
       border = 'rounded',
-    } or nil
+    } or nil,
   }
 end
 
@@ -60,7 +60,7 @@ local function update_buffer_list()
 
   local buffers = buffer.list_buffers()
   buffer_cache = {}
-  
+
   local lines = {}
   for _, buf in ipairs(buffers) do
     buffer_cache[#lines + 1] = buf
@@ -73,7 +73,7 @@ end
 
 local function setup_buffer_autocmds()
   local group = api.nvim_create_augroup('BufFlow', { clear = true })
-  
+
   api.nvim_create_autocmd('BufWritePost', {
     group = group,
     callback = function()
@@ -91,9 +91,9 @@ function M.create_window(config)
 
   list_buf = create_list_buffer()
   local win_config = get_window_config(config)
-  
+
   list_win = api.nvim_open_win(list_buf, true, win_config.list)
-  
+
   if config.preview_enabled and win_config.preview then
     preview_win = api.nvim_open_win(0, false, win_config.preview)
   end
