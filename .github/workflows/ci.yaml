@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  tests:
+    name: Run tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        neovim-version: ['stable', 'nightly']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Neovim
+        uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+          version: ${{ matrix.neovim-version }}
+
+      - name: Install Lua dependencies
+        run: |
+          git clone --depth 1 https://github.com/echasnovski/mini.nvim /tmp/mini.nvim
+          ln -s /tmp/mini.nvim/lua/mini /tmp/mini
+
+      - name: Setup test environment
+        run: |
+          mkdir -p ~/.local/share/nvim/site/pack/vendor/start
+          ln -s $(pwd) ~/.local/share/nvim/site/pack/vendor/start/nvim-bufflow
+          ln -s /tmp/mini.nvim ~/.local/share/nvim/site/pack/vendor/start/mini.nvim
+
+      - name: Run tests
+        run: make test
+
+  style:
+    name: Style check and format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check and format code
+        uses: JohnnyMorganz/stylua-action@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: latest
+          args: --check .
+          
+      - name: Format if check fails
+        if: failure()
+        uses: JohnnyMorganz/stylua-action@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: latest
+          args: .
+
+      - name: Commit changes
+        if: failure()
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'style(stylua): auto fix'
