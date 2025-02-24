@@ -1,5 +1,7 @@
 # nvim-bufflow
 
+[![CI](https://github.com/matukoto/nvim-bufflow/actions/workflows/ci.yml/badge.svg)](https://github.com/matukoto/nvim-bufflow/actions/workflows/ci.yml)
+
 Neovimのバッファ管理プラグイン。プレビュー機能付きでバッファの閲覧、切り替え、削除が可能です。
 
 ## 機能
