@@ -83,10 +83,7 @@ T['open_buffer()']['can open existing buffer'] = function()
 
   local success = buffer.open_buffer(test_buffer.id)
   assert(success == true, 'Expected open_buffer to return true')
-  assert(
-    vim.api.nvim_get_current_buf() == test_buffer.id,
-    'Expected current buffer to be test buffer'
-  )
+  assert(vim.api.nvim_get_current_buf() == test_buffer.id, 'Expected current buffer to be test buffer')
 end
 
 T['open_buffer()']['returns false for non-existent buffer'] = function()
@@ -144,10 +141,7 @@ T['bulk_delete()']['can delete multiple buffers'] = function()
   -- 削除結果を確認
   for _, bufnr in ipairs(buffer_ids) do
     assert(results[bufnr], 'Expected bulk_delete to return true for buffer ' .. bufnr)
-    assert(
-      vim.fn.buflisted(bufnr) == 0,
-      'Buffer ' .. bufnr .. ' should not be listed after deletion'
-    )
+    assert(vim.fn.buflisted(bufnr) == 0, 'Buffer ' .. bufnr .. ' should not be listed after deletion')
   end
 end
 

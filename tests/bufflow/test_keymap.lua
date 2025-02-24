@@ -1,6 +1,6 @@
 local T = require('mini.test')
-local keymap = require('nvim-bufflow.keymap')
 local buffer = require('nvim-bufflow.buffer')
+local keymap = require('nvim-bufflow.keymap')
 local ui = require('nvim-bufflow.ui')
 
 local new_set = T.new_set

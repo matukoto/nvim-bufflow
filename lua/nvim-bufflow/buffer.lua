@@ -80,9 +80,7 @@ function M.bulk_delete(bufnrs)
   local current_buf = vim.api.nvim_get_current_buf()
   if vim.tbl_contains(valid_bufnrs, current_buf) then
     local other_bufs = vim.tbl_filter(function(b)
-      return vim.fn.bufexists(b) == 1
-        and vim.fn.buflisted(b) == 1
-        and not vim.tbl_contains(valid_bufnrs, b)
+      return vim.fn.bufexists(b) == 1 and vim.fn.buflisted(b) == 1 and not vim.tbl_contains(valid_bufnrs, b)
     end, vim.api.nvim_list_bufs())
 
     if #other_bufs > 0 then
