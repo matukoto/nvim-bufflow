@@ -1,5 +1,5 @@
 local T = require('mini.test')
-local buffer = require('bufflow.buffer')
+local buffer = require('nvim-bufflow.buffer')
 
 local new_set = T.new_set
 

@@ -1,11 +1,11 @@
 local T = require('mini.test')
-local ui = require('bufflow.ui')
+local ui = require('nvim-bufflow.ui')
 
 local new_set = T.new_set
 
 local test_files = {
-  'test_ui1.txt',
-  'test_ui2.txt',
+  './tests/buffer-sample/test_ui1.txt',
+  './tests/buffer-sample/test_ui2.txt',
 }
 
 local window_config = {

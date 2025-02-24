@@ -1,6 +1,6 @@
 local M = {}
-local keymap = require('bufflow.keymap')
-local ui = require('bufflow.ui')
+local keymap = require('nvim-bufflow.keymap')
+local ui = require('nvim-bufflow.ui')
 
 -- デフォルトの設定
 local default_config = {

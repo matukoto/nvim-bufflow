@@ -1,5 +1,5 @@
 local api = vim.api
-local buffer = require('bufflow.buffer')
+local buffer = require('nvim-bufflow.buffer')
 
 local M = {}
 

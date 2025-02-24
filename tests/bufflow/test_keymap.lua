@@ -1,7 +1,7 @@
 local T = require('mini.test')
-local keymap = require('bufflow.keymap')
-local buffer = require('bufflow.buffer')
-local ui = require('bufflow.ui')
+local keymap = require('nvim-bufflow.keymap')
+local buffer = require('nvim-bufflow.buffer')
+local ui = require('nvim-bufflow.ui')
 
 local new_set = T.new_set
 
@@ -21,8 +21,8 @@ local window_config = {
 }
 
 local test_files = {
-  'test_keymap1.txt',
-  'test_keymap2.txt',
+  './tests/buffer-sample/test_keymap1.txt',
+  './tests/buffer-sample/test_keymap2.txt',
 }
 
 -- Setup test files and buffers
