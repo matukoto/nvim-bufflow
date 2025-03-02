@@ -34,16 +34,16 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
 require('bufflow').setup({
   -- キーマップの設定
   keymap = {
-    close = 'q',      -- バッファリストを閉じる
-    delete = 'd',     -- バッファを削除
+    close = 'q', -- バッファリストを閉じる
+    delete = 'd', -- バッファを削除
     bulk_delete = 'D', -- 選択したバッファを一括削除
-    preview = 'p',    -- プレビューの切り替え
-    open = '<CR>',    -- バッファを開く
+    preview = 'p', -- プレビューの切り替え
+    open = '<CR>', -- バッファを開く
   },
   -- ウィンドウの設定
   window = {
-    preview_enabled = true,     -- プレビューウィンドウを有効にする
-    preview_width = 0.5,        -- プレビューウィンドウの幅（割合）
+    preview_enabled = true, -- プレビューウィンドウを有効にする
+    preview_width = 0.5, -- プレビューウィンドウの幅（割合）
     preview_position = 'right', -- プレビューウィンドウの位置
   },
 })
